@@ -2,13 +2,118 @@
 
 A production-ready full-stack influencer directory platform built with **Laravel 12** (REST API) and **Angular 20** (standalone components).
 
+**Repository:** https://github.com/ymershabani1/influence-people
+
+## Quick Start
+
+### Requirements
+
+- PHP 8.2+ (extensions: `mbstring`, `openssl`, `pdo_mysql`, `fileinfo`, `gd` or `imagick`)
+- Composer 2.x
+- MySQL 8.0+
+- Node.js 20+ (LTS recommended; Node 22 works)
+- npm 10+
+- Git
+
+### 1. Clone the project
+
+```bash
+git clone https://github.com/ymershabani1/influence-people.git
+cd influence-people
+```
+
+### 2. Backend (Laravel API)
+
+```bash
+cd backend
+composer install
+cp .env.example .env
+```
+
+Edit `backend/.env` and set your MySQL credentials:
+
+```env
+DB_DATABASE=influence_people
+DB_USERNAME=root
+DB_PASSWORD=your_mysql_password
+```
+
+Create the database in MySQL:
+
+```sql
+CREATE DATABASE influence_people;
+```
+
+Then run:
+
+```bash
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+php artisan serve
+```
+
+API runs at **http://localhost:8000**
+
+### 3. Frontend (Angular)
+
+Open a **second terminal**:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+App runs at **http://localhost:4200**
+
+The frontend proxies API requests to `localhost:8000` automatically.
+
+### 4. Admin login
+
+Go to **http://localhost:4200/admin/login**
+
+| Field | Value |
+|-------|-------|
+| Email | `admin@influencer.directory` |
+| Password | `password` |
+
+Override via `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` before running `php artisan migrate --seed`.
+
+### 5. Seeded data
+
+- 100 sample influencers
+- 21 categories
+- 1 admin user
+
+### Windows notes
+
+If `php` or `composer` is not recognized, install them and restart your terminal:
+
+- PHP: https://windows.php.net/download/
+- Composer: https://getcomposer.org/download/
+
+Or with winget:
+
+```powershell
+winget install PHP.PHP.8.3
+winget install Composer.Composer
+```
+
+### Troubleshooting
+
+- **Database connection error** — check MySQL is running and `.env` credentials are correct.
+- **Images not showing** — run `php artisan storage:link` in the `backend` folder.
+- **Login not working** — make sure both servers are running (`php artisan serve` and `npm start`).
+- **Port already in use** — stop other apps on ports 8000 or 4200, or use different ports.
+
 ## Architecture
 
 ```
 influence-people/
 ├── backend/          # Laravel 12 REST API
 │   ├── app/
-│   │   ├── Enums/           # UserRole, Gender
+│   │   ├── Enums/           # UserRole, Gender, FollowersMode
 │   │   ├── Http/
 │   │   │   ├── Controllers/Api/
 │   │   │   ├── Middleware/
@@ -44,67 +149,6 @@ influence-people/
 | Frontend | Standalone + Lazy Routes | Smaller bundles, feature-based code splitting |
 | Frontend | Signals + RxJS | Reactive state for filters; observables for HTTP |
 | Auth | Laravel Sanctum (SPA) | Cookie-based session auth with CSRF protection |
-
-## Requirements
-
-- PHP 8.2+
-- Composer 2.x
-- MySQL 8.0+
-- Node.js 20+ (LTS recommended; Node 22 works)
-- npm 10+
-
-## Backend Setup
-
-```bash
-cd backend
-
-# Install dependencies
-composer install
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your MySQL credentials
-
-# Generate app key
-php artisan key:generate
-
-# Create database
-# CREATE DATABASE influence_people;
-
-# Run migrations and seed data (100 influencers, 21 categories, admin user)
-php artisan migrate --seed
-
-# Link storage for profile images
-php artisan storage:link
-
-# Start API server
-php artisan serve
-```
-
-API runs at `http://localhost:8000`
-
-### Default Admin Credentials
-
-| Field | Value |
-|-------|-------|
-| Email | `admin@influencer.directory` |
-| Password | `password` |
-
-Override via `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env`.
-
-## Frontend Setup
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start dev server (proxies API to localhost:8000)
-npm start
-```
-
-App runs at `http://localhost:4200`
 
 ## API Endpoints
 
@@ -148,13 +192,14 @@ App runs at `http://localhost:4200`
 - Responsive influencer card grid with hover animations
 - Live search with debounce
 - Price range slider, gender filter, sort dropdown
-- Social media icons (only shown when links exist)
-- Influencer detail page with biography, categories, languages
-- Dark mode support
+- Social media icons with per-platform follower counts (K/M format)
+- Influencer detail page with information, categories, languages, call and email buttons
+- EUR-only pricing
 
 ### Admin Dashboard
 - Sidebar navigation (Dashboard, Influencers, Categories, Settings)
 - Influencer CRUD with image upload
+- Followers entry: total manually **or** per-platform (auto-summed)
 - Bulk delete
 - Category management
 - Server-side pagination, search, filtering
@@ -176,7 +221,6 @@ The architecture supports adding without major refactoring:
 - Public API with API keys — add token-based auth alongside Sanctum
 - Role-based permissions — extend `UserRole` enum and policies
 - Favorites, messaging, bookings — add new models/services/repositories
-- Follower sync service — `followers_count` field ready for external API integration
 
 ## Production Build
 
