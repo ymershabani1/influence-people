@@ -1,0 +1,151 @@
+<div class="form-page">
+  <div class="page-header">
+    <a routerLink="/admin/influencers" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      Back to list
+    </a>
+    <h1>{{ isEdit() ? 'Edit Influencer' : 'Create Influencer' }}</h1>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-grid">
+      <mat-card class="form-section">
+        <h2>Profile Image</h2>
+        <div class="image-upload">
+          @if (imagePreview()) {
+            <img [src]="imagePreview()!" alt="Preview" class="preview-img" />
+          } @else {
+            <div class="placeholder">
+              <mat-icon>add_a_photo</mat-icon>
+            </div>
+          }
+          <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" (change)="onImageSelected($event)" id="imageInput" hidden />
+          <label for="imageInput" mat-stroked-button>Upload Image</label>
+        </div>
+      </mat-card>
+
+      <mat-card class="form-section">
+        <h2>Basic Information</h2>
+        <div class="fields-grid">
+          <mat-form-field>
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="first_name" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="last_name" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Gender</mat-label>
+            <mat-select formControlName="gender">
+              @for (g of genders; track g.value) {
+                <mat-option [value]="g.value">{{ g.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <mat-label>Information</mat-label>
+            <textarea matInput formControlName="information" rows="4"></textarea>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Country</mat-label>
+            <input matInput formControlName="country" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Contact Phone</mat-label>
+            <input matInput formControlName="contact_phone" type="tel" placeholder="+31 6 12345678" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Contact Email</mat-label>
+            <input matInput formControlName="contact_email" type="email" placeholder="name@example.com" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Languages (comma-separated)</mat-label>
+            <input matInput formControlName="languages" placeholder="English, Spanish" />
+          </mat-form-field>
+        </div>
+      </mat-card>
+
+      <mat-card class="form-section full-width-section">
+        <h2>Pricing & Followers</h2>
+        <div class="fields-grid">
+          <mat-form-field>
+            <mat-label>Price (EUR)</mat-label>
+            <input matInput type="number" formControlName="price" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Categories</mat-label>
+            <mat-select formControlName="category_ids" multiple>
+              @for (cat of categories(); track cat.id) {
+                <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="followers-mode">
+          <p class="mode-label">Followers entry mode</p>
+          <mat-radio-group formControlName="followers_mode" class="mode-options">
+            <mat-radio-button value="manual">Enter total followers manually</mat-radio-button>
+            <mat-radio-button value="platforms">Enter per platform (auto-sum total)</mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        @if (form.get('followers_mode')?.value === 'manual') {
+          <mat-form-field class="total-followers-field">
+            <mat-label>Total Followers</mat-label>
+            <input matInput type="number" formControlName="followers_count" />
+          </mat-form-field>
+        } @else {
+          <p class="computed-total">Total followers: <strong>{{ computedTotalFormatted }}</strong> (auto-calculated)</p>
+        }
+
+        <div class="toggles">
+          <mat-slide-toggle formControlName="is_featured">Featured</mat-slide-toggle>
+          <mat-slide-toggle formControlName="is_active">Active</mat-slide-toggle>
+        </div>
+      </mat-card>
+
+      <mat-card class="form-section full-width-section">
+        <h2>Social Media</h2>
+        <div class="social-fields">
+          @for (platform of socialPlatforms; track platform.key) {
+            <div class="social-row">
+              <mat-form-field class="social-url">
+                <mat-label>{{ platform.label }} URL</mat-label>
+                <input matInput [formControlName]="platform.urlField" />
+              </mat-form-field>
+              <mat-form-field class="social-followers">
+                <mat-label>{{ platform.label }} Followers</mat-label>
+                <input matInput type="number" [formControlName]="platform.key + '_followers'" min="0" />
+              </mat-form-field>
+            </div>
+          }
+          <div class="social-row">
+            <mat-form-field class="social-url full-row">
+              <mat-label>Discord URL</mat-label>
+              <input matInput formControlName="discord_url" />
+            </mat-form-field>
+          </div>
+          <div class="social-row">
+            <mat-form-field class="social-url full-row">
+              <mat-label>Website URL</mat-label>
+              <input matInput formControlName="website_url" />
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="form-actions">
+      <a mat-stroked-button routerLink="/admin/influencers">Cancel</a>
+      <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
+        {{ isEdit() ? 'Update' : 'Create' }} Influencer
+      </button>
+    </div>
+  </form>
+</div>

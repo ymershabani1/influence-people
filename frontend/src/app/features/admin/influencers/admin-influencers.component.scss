@@ -1,0 +1,21 @@
+.toolbar {
+  @apply flex items-center gap-4 mb-6;
+}
+
+.search-field {
+  @apply flex-1 max-w-md;
+}
+
+.table-container {
+  @apply bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700;
+}
+
+.avatar {
+  @apply w-10 h-10 rounded-full object-cover;
+}
+
+.status-chip {
+  @apply px-2 py-1 text-xs font-medium rounded-full;
+  &.active { @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400; }
+  &.inactive { @apply bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400; }
+}

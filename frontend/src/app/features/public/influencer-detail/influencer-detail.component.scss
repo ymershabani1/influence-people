@@ -1,0 +1,56 @@
+.detail-card {
+  @apply bg-white rounded-2xl p-8 shadow-card border border-gray-100;
+}
+
+.section-label {
+  @apply text-sm font-medium text-gray-500 mb-2;
+}
+
+.gender-badge {
+  @apply px-3 py-1 text-sm font-medium rounded-full;
+}
+.gender-male { @apply bg-blue-100 text-blue-700; }
+.gender-female { @apply bg-pink-100 text-pink-700; }
+.gender-other { @apply bg-purple-100 text-purple-700; }
+
+.featured-badge {
+  @apply px-3 py-1 text-sm font-semibold rounded-full bg-primary-500 text-white;
+}
+
+.stat-box {
+  @apply flex flex-col px-4 py-3 rounded-xl bg-gray-50;
+}
+
+.stat-label {
+  @apply text-xs text-gray-500 uppercase tracking-wide;
+}
+
+.stat-value {
+  @apply text-lg font-bold text-gray-900;
+}
+
+.contact-actions {
+  @apply flex flex-wrap gap-3 mb-3;
+}
+
+.contact-btn {
+  @apply inline-flex items-center gap-2 px-6 py-2 text-base;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+.contact-details {
+  @apply flex flex-col gap-1 text-sm text-gray-600;
+
+  span {
+    @apply inline-flex items-center gap-2;
+  }
+
+  i {
+    @apply text-primary-600;
+    width: 1rem;
+    text-align: center;
+  }
+}

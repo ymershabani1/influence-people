@@ -1,0 +1,82 @@
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  @apply bg-gray-50 text-gray-900;
+}
+
+/* Tailwind preflight breaks Material form fields — reset inside Material components */
+.mat-mdc-form-field {
+  display: block;
+  width: 100%;
+  font-family: inherit;
+}
+
+.mat-mdc-form-field-flex {
+  width: 100%;
+  align-items: center;
+}
+
+.mat-mdc-form-field-infix {
+  flex: 1 1 auto;
+  min-width: 0 !important;
+  width: auto !important;
+}
+
+.mat-mdc-text-field-wrapper,
+.mdc-text-field {
+  width: 100%;
+}
+
+.mat-mdc-select,
+.mat-mdc-select-trigger,
+.mat-mdc-select-value {
+  width: 100%;
+}
+
+.mat-mdc-form-field input.mat-mdc-input-element,
+.mat-mdc-form-field textarea.mat-mdc-input-element,
+.mat-mdc-form-field select.mat-mdc-input-element {
+  box-sizing: border-box;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Remove notch divider artifact on outline fields (if any remain) */
+.mdc-text-field--outlined .mdc-notched-outline__notch {
+  border-right: none;
+}
+
+/* Fill appearance spacing */
+.mdc-text-field--filled {
+  border-radius: 8px 8px 0 0;
+}
+
+.page-header h1 {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.page-header p {
+  @apply text-gray-500;
+}
+
+/* Filter / form grids */
+.filter-panel .mat-mdc-form-field,
+.fields-grid .mat-mdc-form-field,
+.search-field.mat-mdc-form-field {
+  width: 100%;
+}

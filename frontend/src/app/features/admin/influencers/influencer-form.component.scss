@@ -1,0 +1,81 @@
+.form-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+
+.full-width-section {
+  @apply lg:col-span-2;
+}
+
+.form-section {
+  @apply p-6 rounded-2xl bg-white shadow-sm border border-gray-100;
+  h2 { @apply text-lg font-semibold mb-4 text-gray-900; }
+}
+
+.fields-grid {
+  @apply flex flex-col gap-4;
+
+  @screen sm {
+    @apply grid grid-cols-2 gap-4;
+  }
+}
+
+.full-width {
+  @apply sm:col-span-2;
+}
+
+.followers-mode {
+  @apply my-4;
+}
+
+.mode-label {
+  @apply text-sm font-medium text-gray-700 mb-2;
+}
+
+.mode-options {
+  @apply flex flex-col gap-2;
+}
+
+.total-followers-field {
+  @apply max-w-xs mt-2;
+}
+
+.computed-total {
+  @apply mt-3 text-sm text-gray-600;
+}
+
+.social-fields {
+  @apply flex flex-col gap-3;
+}
+
+.social-row {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-3;
+}
+
+.social-url.full-row {
+  @apply md:col-span-2;
+}
+
+.image-upload {
+  @apply flex flex-col items-center gap-4;
+}
+
+.preview-img {
+  @apply w-40 h-40 rounded-2xl object-cover shadow-md;
+}
+
+.placeholder {
+  @apply w-40 h-40 rounded-2xl bg-gray-100 flex items-center justify-center;
+  mat-icon { @apply text-4xl text-gray-400; width: 48px; height: 48px; font-size: 48px; }
+}
+
+.toggles {
+  @apply flex gap-6 mt-4;
+}
+
+.form-actions {
+  @apply flex justify-end gap-3 mt-6;
+}
+
+.back-link {
+  @apply inline-flex items-center gap-1 text-primary-600 mb-2;
+}

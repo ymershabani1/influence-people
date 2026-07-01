@@ -1,0 +1,43 @@
+.admin-container {
+  @apply h-screen bg-gray-50;
+}
+
+.admin-sidenav {
+  @apply w-64 border-r border-gray-200 bg-white;
+}
+
+.sidenav-header {
+  @apply p-6 border-b border-gray-200;
+}
+
+.logo {
+  @apply flex items-center gap-2 text-lg font-bold text-primary-600;
+}
+
+.sidenav-footer {
+  @apply absolute bottom-0 w-full border-t border-gray-200;
+}
+
+.active-link {
+  @apply bg-primary-50 text-primary-600;
+}
+
+.admin-toolbar {
+  @apply bg-white border-b border-gray-200;
+}
+
+.toolbar-title {
+  @apply text-lg font-semibold;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.user-name {
+  @apply text-sm text-gray-500 mr-4;
+}
+
+.admin-content {
+  @apply p-6;
+}

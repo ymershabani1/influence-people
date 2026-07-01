@@ -1,0 +1,82 @@
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Hero & Filters -->
+  <div class="mb-8 animate-fade-in">
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+      Discover Influencers
+    </h1>
+    <p class="text-gray-600 dark:text-gray-400 mb-8">
+      Browse our curated directory of top influencers across every niche.
+    </p>
+
+    <div class="filter-panel">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <mat-form-field class="w-full">
+          <mat-label>Search</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [formControl]="searchControl" placeholder="Name, username, category..." />
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Gender</mat-label>
+          <mat-select [formControl]="genderControl" (selectionChange)="onFilterChange()">
+            @for (opt of genderOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Sort by</mat-label>
+          <mat-select [formControl]="sortControl" (selectionChange)="onFilterChange()">
+            @for (opt of sortOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="price-filter">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+            Price Range: {{ minPrice() | number:'1.0-0' }} - {{ maxPrice() | number:'1.0-0' }}
+          </label>
+          <mat-slider
+            [min]="priceRange().min"
+            [max]="priceRange().max"
+            [step]="100"
+            discrete
+            class="w-full"
+          >
+            <input matSliderStartThumb [value]="minPrice()" (valueChange)="minPrice.set($event); onPriceChange()" />
+            <input matSliderEndThumb [value]="maxPrice()" (valueChange)="maxPrice.set($event); onPriceChange()" />
+          </mat-slider>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  @if (loading()) {
+    <app-loading-skeleton [count]="8" />
+  } @else if (influencers().length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">person_search</mat-icon>
+      <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">No influencers found</h2>
+      <p class="text-gray-500 dark:text-gray-400">Try adjusting your search or filters.</p>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
+      @for (influencer of influencers(); track influencer.id) {
+        <app-influencer-card [influencer]="influencer" />
+      }
+    </div>
+
+    <mat-paginator
+      class="mt-8 bg-transparent"
+      [length]="total()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[12, 24, 48]"
+      [pageIndex]="currentPage() - 1"
+      (page)="onPageChange($event)"
+      aria-label="Select page"
+    />
+  }
+</section>

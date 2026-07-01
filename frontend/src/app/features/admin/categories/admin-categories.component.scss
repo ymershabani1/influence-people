@@ -1,0 +1,11 @@
+.form-card h2, .table-card h2 {
+  @apply text-lg font-semibold;
+}
+
+.form-card {
+  @apply rounded-2xl;
+}
+
+.table-card {
+  @apply rounded-2xl overflow-hidden;
+}

@@ -1,0 +1,68 @@
+<div class="dashboard">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <p>Overview of your influencer directory</p>
+  </div>
+
+  @if (data(); as d) {
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon>groups</mat-icon>
+        <div>
+          <span class="stat-value">{{ d.stats.total }}</span>
+          <span class="stat-label">Total Influencers</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon>check_circle</mat-icon>
+        <div>
+          <span class="stat-value">{{ d.stats.active }}</span>
+          <span class="stat-label">Active</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon>star</mat-icon>
+        <div>
+          <span class="stat-value">{{ d.stats.featured }}</span>
+          <span class="stat-label">Featured</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon>people</mat-icon>
+        <div>
+          <span class="stat-value">{{ d.stats.total_followers | number }}</span>
+          <span class="stat-label">Total Followers</span>
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="quick-actions">
+      <a mat-flat-button color="primary" routerLink="/admin/influencers/new">
+        <mat-icon>add</mat-icon>
+        Add Influencer
+      </a>
+      <a mat-stroked-button routerLink="/admin/categories">
+        <mat-icon>category</mat-icon>
+        Manage Categories
+      </a>
+    </div>
+
+    <mat-card class="recent-card">
+      <h2>Recent Influencers</h2>
+      <div class="recent-list">
+        @for (inf of d.recent_influencers; track inf.id) {
+          <div class="recent-item">
+            <img [src]="inf.profile_image_thumbnail_url || '/assets/placeholder-avatar.svg'" [alt]="inf.full_name" />
+            <div>
+              <span class="name">{{ inf.full_name }}</span>
+              <span class="meta">&euro;{{ inf.price | number:'1.0-0' }} &middot; {{ inf.followers_formatted }} followers</span>
+            </div>
+            <a mat-icon-button [routerLink]="['/admin/influencers', inf.id, 'edit']">
+              <mat-icon>edit</mat-icon>
+            </a>
+          </div>
+        }
+      </div>
+    </mat-card>
+  }
+</div>

@@ -1,0 +1,118 @@
+<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <a routerLink="/" class="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 mb-6 transition-colors">
+    <mat-icon>arrow_back</mat-icon>
+    Back to directory
+  </a>
+
+  @if (loading()) {
+    <app-loading-skeleton [count]="1" />
+  } @else if (influencer(); as inf) {
+    <div class="detail-card animate-fade-in">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+        <div class="md:col-span-2">
+          <img
+            [src]="inf.profile_image_url || '/assets/placeholder-avatar.svg'"
+            [alt]="inf.full_name"
+            class="w-full rounded-2xl object-cover aspect-square shadow-lg"
+          />
+        </div>
+
+        <div class="md:col-span-3">
+          <div class="flex flex-wrap items-start gap-3 mb-4">
+            <h1 class="text-3xl font-bold text-gray-900">
+              {{ inf.first_name }} {{ inf.last_name }}
+            </h1>
+            <span class="gender-badge" [class]="'gender-' + inf.gender">{{ inf.gender_label }}</span>
+            @if (inf.is_featured) {
+              <span class="featured-badge">Featured</span>
+            }
+          </div>
+
+          <p class="text-gray-500 mb-1">&#64;{{ inf.username }}</p>
+
+          <div class="flex flex-wrap gap-4 my-6">
+            <div class="stat-box">
+              <span class="stat-label">Price</span>
+              <span class="stat-value">&euro;{{ inf.price | number:'1.0-0' }}</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Followers</span>
+              <span class="stat-value">{{ inf.followers_formatted }}</span>
+            </div>
+            @if (inf.country) {
+              <div class="stat-box">
+                <span class="stat-label">Country</span>
+                <span class="stat-value">{{ inf.country }}</span>
+              </div>
+            }
+          </div>
+
+          @if (inf.categories.length) {
+            <div class="mb-6">
+              <h3 class="section-label">Categories</h3>
+              <div class="flex flex-wrap gap-2">
+                @for (cat of inf.categories; track cat.id) {
+                  <mat-chip>{{ cat.name }}</mat-chip>
+                }
+              </div>
+            </div>
+          }
+
+          @if (inf.languages.length) {
+            <div class="mb-6">
+              <h3 class="section-label">Languages</h3>
+              <p class="text-gray-700">{{ inf.languages.join(', ') }}</p>
+            </div>
+          }
+
+          @if (inf.information) {
+            <div class="mb-6">
+              <h3 class="section-label">Information</h3>
+              <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ inf.information }}</p>
+            </div>
+          }
+
+          @if (hasSocialLinks(inf)) {
+            <div class="mb-6">
+              <h3 class="section-label">Social Media</h3>
+              <app-social-icons
+                [links]="inf.social_links"
+                [followers]="inf.social_followers ?? {}"
+                [followersFormatted]="inf.social_followers_formatted ?? {}"
+                size="lg"
+              />
+            </div>
+          }
+
+          @if (inf.contact_phone || inf.contact_email) {
+            <div class="mb-6">
+              <h3 class="section-label">Contact Influencer</h3>
+              <div class="contact-actions">
+                @if (inf.contact_phone) {
+                  <a mat-flat-button color="primary" class="contact-btn" [href]="phoneHref(inf.contact_phone)">
+                    <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                    Call
+                  </a>
+                }
+                @if (inf.contact_email) {
+                  <a mat-stroked-button class="contact-btn" [href]="mailHref(inf.contact_email)">
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    Email
+                  </a>
+                }
+              </div>
+              <div class="contact-details">
+                @if (inf.contact_phone) {
+                  <span><i class="fa-solid fa-phone"></i> {{ inf.contact_phone }}</span>
+                }
+                @if (inf.contact_email) {
+                  <span><i class="fa-solid fa-envelope"></i> {{ inf.contact_email }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</section>

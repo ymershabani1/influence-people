@@ -1,0 +1,29 @@
+.login-page {
+  @apply min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4;
+}
+
+.login-card {
+  @apply w-full max-w-md p-8 rounded-2xl;
+}
+
+.login-header {
+  @apply text-center mb-8;
+}
+
+.logo-icon {
+  @apply w-14 h-14 mx-auto mb-4 rounded-2xl bg-primary-600 flex items-center justify-center;
+  mat-icon { @apply text-white text-3xl; width: 32px; height: 32px; font-size: 32px; }
+}
+
+.login-header h1 {
+  @apply text-2xl font-bold text-gray-900 dark:text-white;
+}
+
+.login-header p {
+  @apply text-gray-500 dark:text-gray-400 mt-1;
+}
+
+.login-btn {
+  @apply mt-4 py-2;
+  height: 48px;
+}

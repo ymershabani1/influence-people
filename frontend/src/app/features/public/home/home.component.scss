@@ -1,0 +1,18 @@
+.filter-panel {
+  @apply bg-white rounded-2xl p-6 shadow-card border border-gray-100;
+}
+
+.price-filter {
+  @apply flex flex-col justify-center px-2;
+}
+
+.empty-state {
+  @apply flex flex-col items-center justify-center py-20 text-center;
+}
+
+.empty-icon {
+  @apply text-6xl text-gray-300 mb-4;
+  width: 64px;
+  height: 64px;
+  font-size: 64px;
+}
