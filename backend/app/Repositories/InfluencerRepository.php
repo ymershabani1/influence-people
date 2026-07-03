@@ -118,6 +118,7 @@ class InfluencerRepository implements InfluencerRepositoryInterface
             'lowest_price' => $query->orderBy('price', 'asc'),
             'highest_price' => $query->orderBy('price', 'desc'),
             'most_followers' => $query->orderBy('followers_count', 'desc'),
+            'most_booked' => $query->orderBy('bookings_count', 'desc'),
             'alphabetical' => $query->orderBy('first_name')->orderBy('last_name'),
             default => $query->orderBy('created_at', 'desc'),
         };

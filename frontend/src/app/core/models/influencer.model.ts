@@ -43,6 +43,7 @@ export interface Influencer {
   currency: string;
   followers_count: number;
   followers_formatted: string;
+  bookings_count: number;
   followers_mode?: FollowersMode;
   social_followers?: Partial<Record<string, number>>;
   social_followers_formatted?: Partial<Record<string, string>>;
@@ -86,6 +87,7 @@ export type InfluencerSort =
   | 'lowest_price'
   | 'highest_price'
   | 'most_followers'
+  | 'most_booked'
   | 'alphabetical';
 
 export interface PriceRange {

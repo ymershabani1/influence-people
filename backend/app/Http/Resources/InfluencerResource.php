@@ -29,6 +29,7 @@ class InfluencerResource extends JsonResource
             'currency' => $this->currency,
             'followers_count' => $this->followers_count,
             'followers_formatted' => FollowerFormatter::format($this->followers_count),
+            'bookings_count' => (int) $this->bookings_count,
             'followers_mode' => $this->followers_mode?->value ?? 'manual',
             'social_followers' => $socialFollowers,
             'social_followers_formatted' => FollowerFormatter::formatMany($socialFollowers),

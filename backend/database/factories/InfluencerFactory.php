@@ -71,6 +71,7 @@ class InfluencerFactory extends Factory
             'followers_mode' => fake()->randomElement(['manual', 'platforms']),
             'social_followers' => null,
             'followers_count' => fake()->numberBetween(1000, 10000000),
+            'bookings_count' => fake()->numberBetween(0, 1000),
             'profile_image' => null,
             'profile_image_thumbnail' => null,
             'is_featured' => fake()->boolean(20),

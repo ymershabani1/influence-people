@@ -28,6 +28,7 @@ class Influencer extends Model
         'price',
         'currency',
         'followers_count',
+        'bookings_count',
         'followers_mode',
         'social_followers',
         'profile_image',
@@ -56,6 +57,7 @@ class Influencer extends Model
             'languages' => 'array',
             'price' => 'decimal:2',
             'followers_count' => 'integer',
+            'bookings_count' => 'integer',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
         ];

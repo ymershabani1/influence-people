@@ -22,7 +22,7 @@ class ListInfluencerRequest extends FormRequest
             'max_price' => ['nullable', 'numeric', 'min:0'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'sort' => ['nullable', 'string', Rule::in([
-                'newest', 'oldest', 'lowest_price', 'highest_price', 'most_followers', 'alphabetical',
+                'newest', 'oldest', 'lowest_price', 'highest_price', 'most_followers', 'most_booked', 'alphabetical',
             ])],
             'featured' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],

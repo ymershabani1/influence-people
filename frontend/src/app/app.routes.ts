@@ -15,6 +15,18 @@ export const routes: Routes = [
           import('./features/public/home/home.component').then((m) => m.HomeComponent),
       },
       {
+        path: 'trending',
+        loadComponent: () =>
+          import('./features/public/trending/trending.component').then(
+            (m) => m.TrendingComponent
+          ),
+      },
+      {
+        path: 'search',
+        loadComponent: () =>
+          import('./features/public/search/search.component').then((m) => m.SearchComponent),
+      },
+      {
         path: 'influencers/:id',
         loadComponent: () =>
           import('./features/public/influencer-detail/influencer-detail.component').then(

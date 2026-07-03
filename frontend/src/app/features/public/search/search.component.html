@@ -1,0 +1,168 @@
+<!-- Header -->
+<section class="bg-hero-radial border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <nav class="text-sm text-gray-500 mb-4">
+      <a routerLink="/" class="hover:text-primary-600">Home</a>
+      <span class="mx-2">/</span>
+      <span class="text-gray-700 font-medium">Search</span>
+    </nav>
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900">Find Your Influencer</h1>
+    <p class="text-gray-600 mt-2">
+      Search and filter across our full directory of creators.
+    </p>
+  </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Filter bar -->
+  <div class="filter-panel">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="field">
+        <label class="field-label">Search</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+          <input
+            [formControl]="searchControl"
+            type="text"
+            placeholder="Name, username, category..."
+            class="field-input"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Category</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-layer-group text-gray-400"></i>
+          <select
+            [formControl]="categoryControl"
+            (change)="onFilterChange()"
+            class="field-input cursor-pointer"
+          >
+            <option value="">All Categories</option>
+            @for (cat of categories(); track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Gender</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-venus-mars text-gray-400"></i>
+          <select
+            [formControl]="genderControl"
+            (change)="onFilterChange()"
+            class="field-input cursor-pointer"
+          >
+            @for (opt of genderOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Sort by</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-arrow-down-wide-short text-gray-400"></i>
+          <select
+            [formControl]="sortControl"
+            (change)="onFilterChange()"
+            class="field-input cursor-pointer"
+          >
+            @for (opt of sortOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 flex flex-col sm:flex-row sm:items-center gap-4">
+      <div class="flex-1">
+        <label class="field-label flex items-center justify-between">
+          <span>Max Price</span>
+          <span class="text-primary-600 font-semibold"
+            >{{ maxPrice() | number: '1.0-0' }} EUR</span
+          >
+        </label>
+        <input
+          type="range"
+          [min]="priceRange().min"
+          [max]="priceRange().max"
+          [step]="100"
+          [value]="maxPrice()"
+          (input)="onPriceChange(+$any($event.target).value)"
+          class="price-slider"
+        />
+      </div>
+      <button (click)="clearFilters()" class="clear-btn">
+        <i class="fa-solid fa-rotate-left text-xs"></i> Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Results header -->
+  <div class="flex items-center justify-between mt-8 mb-4">
+    <p class="text-gray-600">
+      @if (!loading()) {
+        <span class="font-semibold text-gray-900">{{ total() }}</span> influencers found
+      } @else {
+        Searching...
+      }
+    </p>
+  </div>
+
+  <!-- Results -->
+  @if (loading()) {
+    <app-loading-skeleton [count]="8" />
+  } @else if (influencers().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-user-slash empty-icon"></i>
+      <h2 class="text-xl font-semibold text-gray-700">No influencers found</h2>
+      <p class="text-gray-500 mt-1">Try adjusting your search or filters.</p>
+      <button (click)="clearFilters()" class="clear-btn mt-5">
+        <i class="fa-solid fa-rotate-left text-xs"></i> Reset Filters
+      </button>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
+      @for (influencer of influencers(); track influencer.id) {
+        <app-influencer-card [influencer]="influencer" />
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+      <div class="flex items-center justify-center gap-1.5 mt-12">
+        <button
+          class="page-btn"
+          [disabled]="currentPage() === 1"
+          (click)="changePage(currentPage() - 1)"
+        >
+          <i class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+
+        @for (p of pageNumbers; track p) {
+          <button
+            class="page-btn"
+            [class.page-btn-active]="p === currentPage()"
+            (click)="changePage(p)"
+          >
+            {{ p }}
+          </button>
+        }
+
+        <button
+          class="page-btn"
+          [disabled]="currentPage() === totalPages"
+          (click)="changePage(currentPage() + 1)"
+        >
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+      </div>
+    }
+  }
+</section>

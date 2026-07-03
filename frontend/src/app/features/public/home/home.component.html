@@ -1,82 +1,170 @@
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Hero & Filters -->
-  <div class="mb-8 animate-fade-in">
-    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-      Discover Influencers
+<!-- Hero -->
+<section class="relative overflow-hidden bg-hero-radial">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10 sm:pt-24 text-center">
+    <span
+      class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 text-primary-700 text-sm font-medium border border-primary-100 animate-fade-in"
+    >
+      <i class="fa-solid fa-bolt"></i>
+      Join 5,000+ top brands using InfluenceElite
+    </span>
+
+    <h1
+      class="mt-6 text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900 leading-[1.1] animate-slide-up"
+    >
+      Discover the Perfect
+      <span class="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+        Influencer</span
+      >
+      <br class="hidden sm:block" />
+      for Your Brand
     </h1>
-    <p class="text-gray-600 dark:text-gray-400 mb-8">
-      Browse our curated directory of top influencers across every niche.
+
+    <p class="mt-5 max-w-2xl mx-auto text-lg text-gray-600 animate-slide-up">
+      Connect with 25,000+ vetted creators across every niche. Search, compare and book
+      top-tier talent in minutes — all in one place.
     </p>
 
-    <div class="filter-panel">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <mat-form-field class="w-full">
-          <mat-label>Search</mat-label>
-          <mat-icon matPrefix>search</mat-icon>
-          <input matInput [formControl]="searchControl" placeholder="Name, username, category..." />
-        </mat-form-field>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3 animate-slide-up">
+      <a routerLink="/search" class="hero-primary-btn">
+        Browse Influencers <i class="fa-solid fa-arrow-right text-sm"></i>
+      </a>
+      <a routerLink="/trending" class="hero-secondary-btn">
+        <i class="fa-solid fa-fire text-orange-500"></i> View Trending
+      </a>
+    </div>
 
-        <mat-form-field class="w-full">
-          <mat-label>Gender</mat-label>
-          <mat-select [formControl]="genderControl" (selectionChange)="onFilterChange()">
-            @for (opt of genderOptions; track opt.value) {
-              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field class="w-full">
-          <mat-label>Sort by</mat-label>
-          <mat-select [formControl]="sortControl" (selectionChange)="onFilterChange()">
-            @for (opt of sortOptions; track opt.value) {
-              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <div class="price-filter">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-            Price Range: {{ minPrice() | number:'1.0-0' }} - {{ maxPrice() | number:'1.0-0' }}
-          </label>
-          <mat-slider
-            [min]="priceRange().min"
-            [max]="priceRange().max"
-            [step]="100"
-            discrete
-            class="w-full"
-          >
-            <input matSliderStartThumb [value]="minPrice()" (valueChange)="minPrice.set($event); onPriceChange()" />
-            <input matSliderEndThumb [value]="maxPrice()" (valueChange)="maxPrice.set($event); onPriceChange()" />
-          </mat-slider>
+    <!-- Search bar -->
+    <div class="mt-10 max-w-3xl mx-auto animate-slide-up">
+      <form
+        [formGroup]="searchForm"
+        (ngSubmit)="onSearch($event)"
+        class="flex flex-col sm:flex-row items-stretch gap-2 bg-white p-2 rounded-2xl shadow-card border border-gray-100"
+      >
+        <div class="flex items-center gap-2 flex-1 px-3">
+          <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+          <input
+            formControlName="search"
+            type="text"
+            placeholder="Search by name, username or category..."
+            class="w-full py-3 bg-transparent outline-none text-gray-800 placeholder:text-gray-400"
+          />
         </div>
-      </div>
+
+        <div class="flex items-center border-t sm:border-t-0 sm:border-l border-gray-100 px-3">
+          <i class="fa-solid fa-layer-group text-gray-400 mr-2"></i>
+          <select
+            formControlName="category"
+            class="w-full sm:w-44 py-3 bg-transparent outline-none text-gray-700 cursor-pointer"
+          >
+            <option value="">All Categories</option>
+            @for (cat of categories(); track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+
+        <button type="submit" class="hero-primary-btn justify-center sm:w-auto">
+          Search
+        </button>
+      </form>
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto animate-fade-in">
+      @for (stat of stats(); track stat.label) {
+        <div class="stat-card">
+          <div class="text-3xl font-extrabold text-gray-900">{{ stat.value }}</div>
+          <div class="text-sm text-gray-500 mt-1">{{ stat.label }}</div>
+        </div>
+      }
     </div>
   </div>
+</section>
 
-  <!-- Results -->
-  @if (loading()) {
-    <app-loading-skeleton [count]="8" />
-  } @else if (influencers().length === 0) {
-    <div class="empty-state">
-      <mat-icon class="empty-icon">person_search</mat-icon>
-      <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">No influencers found</h2>
-      <p class="text-gray-500 dark:text-gray-400">Try adjusting your search or filters.</p>
+<!-- Trending Influencers -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <div class="flex items-end justify-between gap-4 mb-8">
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center gap-2">
+        <i class="fa-solid fa-fire text-orange-500"></i> Trending Influencers
+      </h2>
+      <p class="text-gray-500 mt-1">The most booked creators on the platform right now.</p>
     </div>
+    <a routerLink="/trending" class="view-all-link">
+      View All <i class="fa-solid fa-arrow-right text-xs"></i>
+    </a>
+  </div>
+
+  @if (loadingTrending()) {
+    <app-loading-skeleton [count]="8" />
+  } @else if (trending().length === 0) {
+    <div class="text-center py-16 text-gray-500">No influencers available yet.</div>
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
-      @for (influencer of influencers(); track influencer.id) {
+      @for (influencer of trending(); track influencer.id) {
         <app-influencer-card [influencer]="influencer" />
       }
     </div>
-
-    <mat-paginator
-      class="mt-8 bg-transparent"
-      [length]="total()"
-      [pageSize]="pageSize()"
-      [pageSizeOptions]="[12, 24, 48]"
-      [pageIndex]="currentPage() - 1"
-      (page)="onPageChange($event)"
-      aria-label="Select page"
-    />
   }
+</section>
+
+<!-- Trusted by brands -->
+<section class="border-y border-gray-100 bg-gray-50/60">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <p class="text-center text-sm font-medium uppercase tracking-widest text-gray-400 mb-6">
+      Trusted by global brands
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+      @for (brand of brands; track brand) {
+        <span class="text-2xl font-extrabold text-gray-300 tracking-tight flex items-center gap-2">
+          <i class="fa-solid fa-circle-nodes"></i> {{ brand }}
+        </span>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how-it-works" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 scroll-mt-20">
+  <div class="text-center max-w-2xl mx-auto mb-14">
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
+      How InfluenceElite Works
+    </h2>
+    <p class="text-gray-500 mt-3">
+      From discovery to results in three simple steps — built to make influencer marketing
+      effortless.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    @for (step of steps; track step.title; let i = $index) {
+      <div class="step-card">
+        <div class="step-icon">
+          <i class="fa-solid" [class]="step.icon"></i>
+        </div>
+        <div class="step-number">Step {{ i + 1 }}</div>
+        <h3 class="text-lg font-bold text-gray-900 mt-1">{{ step.title }}</h3>
+        <p class="text-gray-500 mt-2 text-sm leading-relaxed">{{ step.description }}</p>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+  <div class="cta-banner">
+    <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+      <div class="text-center lg:text-left">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
+          Ready to scale your brand with top-tier creators?
+        </h2>
+        <p class="text-white/80 mt-2 max-w-xl">
+          Start browsing thousands of influencers today. No commitment, no hidden fees.
+        </p>
+      </div>
+      <a routerLink="/search" class="cta-btn">
+        Get Started <i class="fa-solid fa-arrow-right text-sm"></i>
+      </a>
+    </div>
+  </div>
 </section>

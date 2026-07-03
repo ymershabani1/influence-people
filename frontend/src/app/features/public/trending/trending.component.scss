@@ -1,0 +1,19 @@
+.podium-card {
+  @apply relative flex items-center gap-4 bg-white rounded-2xl p-5 pr-6 border border-gray-100 shadow-card;
+  @apply hover:shadow-card-hover hover:-translate-y-1 transition-all;
+}
+
+.podium-1 {
+  @apply ring-2 ring-primary-400 bg-gradient-to-br from-primary-50 to-white;
+}
+
+.podium-rank {
+  @apply absolute -top-3 -left-2 w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold text-white;
+  @apply bg-gradient-to-br from-primary-600 to-accent-600 shadow-glow;
+}
+
+.load-more-btn {
+  @apply inline-flex items-center gap-2 px-8 py-3 rounded-full text-sm font-semibold;
+  @apply bg-gray-900 text-white hover:bg-primary-600 transition-colors;
+  @apply disabled:opacity-60 disabled:cursor-not-allowed;
+}

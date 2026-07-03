@@ -1,39 +1,29 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSliderModule } from '@angular/material/slider';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { InfluencerService } from '../../../core/services/influencer.service';
 import { CategoryService } from '../../../core/services/category.service';
-import {
-  Category,
-  Gender,
-  Influencer,
-  InfluencerFilters,
-  InfluencerSort,
-  PriceRange,
-} from '../../../core/models/influencer.model';
+import { Category, Influencer } from '../../../core/models/influencer.model';
 import { InfluencerCardComponent } from '../../../shared/components/influencer-card/influencer-card.component';
 import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
+
+interface Stat {
+  label: string;
+  value: string;
+}
+
+interface Step {
+  icon: string;
+  title: string;
+  description: string;
+}
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    DecimalPipe,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSliderModule,
-    MatPaginatorModule,
-    MatIconModule,
+    RouterLink,
     InfluencerCardComponent,
     LoadingSkeletonComponent,
   ],
@@ -43,109 +33,108 @@ import { LoadingSkeletonComponent } from '../../../shared/components/loading-ske
 export class HomeComponent implements OnInit {
   private readonly influencerService = inject(InfluencerService);
   private readonly categoryService = inject(CategoryService);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
-  readonly influencers = signal<Influencer[]>([]);
+  readonly trending = signal<Influencer[]>([]);
   readonly categories = signal<Category[]>([]);
-  readonly loading = signal(true);
-  readonly total = signal(0);
-  readonly pageSize = signal(12);
-  readonly currentPage = signal(1);
+  readonly loadingTrending = signal(true);
+  readonly totalInfluencers = signal(0);
 
-  readonly searchControl = new FormControl('');
-  readonly genderControl = new FormControl<Gender | ''>('');
-  readonly sortControl = new FormControl<InfluencerSort>('newest');
+  readonly searchForm = new FormGroup({
+    search: new FormControl(''),
+    category: new FormControl<number | ''>(''),
+  });
 
-  priceRange = signal<PriceRange>({ min: 0, max: 10000 });
-  minPrice = signal(0);
-  maxPrice = signal(10000);
-
-  readonly sortOptions: { value: InfluencerSort; label: string }[] = [
-    { value: 'newest', label: 'Newest' },
-    { value: 'oldest', label: 'Oldest' },
-    { value: 'lowest_price', label: 'Lowest Price' },
-    { value: 'highest_price', label: 'Highest Price' },
-    { value: 'most_followers', label: 'Most Followers' },
-    { value: 'alphabetical', label: 'Alphabetically' },
+  readonly steps: Step[] = [
+    {
+      icon: 'fa-magnifying-glass',
+      title: 'Discover Your Match',
+      description:
+        'Filter thousands of vetted creators by niche, audience, budget and platform to find the perfect fit for your brand.',
+    },
+    {
+      icon: 'fa-handshake',
+      title: 'Connect & Collaborate',
+      description:
+        'Reach out directly, align on deliverables, and kick off campaigns with creators who genuinely love your product.',
+    },
+    {
+      icon: 'fa-chart-line',
+      title: 'Track Results',
+      description:
+        'Measure reach, engagement and conversions in one place so you always know your return on every collaboration.',
+    },
   ];
 
-  readonly genderOptions: { value: Gender | ''; label: string }[] = [
-    { value: '', label: 'All Genders' },
-    { value: 'male', label: 'Male' },
-    { value: 'female', label: 'Female' },
-    { value: 'other', label: 'Other' },
-  ];
+  readonly brands = ['Nova', 'Pulse', 'Vertex', 'Lumen', 'Zenith', 'Orbit'];
+
+  stats = signal<Stat[]>([
+    { label: 'Influencers', value: '—' },
+    { label: 'Categories', value: '—' },
+    { label: 'Campaigns', value: '21M+' },
+    { label: 'Brands', value: '5K+' },
+  ]);
 
   ngOnInit(): void {
+    this.loadTrending();
     this.loadCategories();
-    this.loadPriceRange();
-    this.setupSearch();
-    this.loadInfluencers();
   }
 
-  onPriceChange(): void {
-    this.currentPage.set(1);
-    this.loadInfluencers();
-  }
-
-  onFilterChange(): void {
-    this.currentPage.set(1);
-    this.loadInfluencers();
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.currentPage.set(event.pageIndex + 1);
-    this.pageSize.set(event.pageSize);
-    this.loadInfluencers();
-  }
-
-  private setupSearch(): void {
-    this.searchControl.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        tap(() => {
-          this.currentPage.set(1);
-          this.loadInfluencers();
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe();
+  private loadTrending(): void {
+    this.loadingTrending.set(true);
+    this.influencerService
+      .list({ sort: 'most_booked', per_page: 8, page: 1 })
+      .subscribe({
+        next: (res) => {
+          this.trending.set(res.data);
+          this.totalInfluencers.set(res.meta.total);
+          this.updateStats();
+          this.loadingTrending.set(false);
+        },
+        error: () => this.loadingTrending.set(false),
+      });
   }
 
   private loadCategories(): void {
     this.categoryService.list().subscribe((res) => {
       this.categories.set(res.data);
+      this.updateStats();
     });
   }
 
-  private loadPriceRange(): void {
-    this.influencerService.getPriceRange().subscribe((res) => {
-      this.priceRange.set(res.data);
-      this.minPrice.set(res.data.min);
-      this.maxPrice.set(res.data.max);
-    });
+  private updateStats(): void {
+    this.stats.set([
+      { label: 'Influencers', value: this.formatCount(this.totalInfluencers()) },
+      { label: 'Categories', value: this.formatCount(this.categories().length) },
+      { label: 'Campaigns', value: '21M+' },
+      { label: 'Brands', value: '5K+' },
+    ]);
   }
 
-  loadInfluencers(): void {
-    this.loading.set(true);
-    const filters: InfluencerFilters = {
-      search: this.searchControl.value || undefined,
-      gender: this.genderControl.value || undefined,
-      min_price: this.minPrice(),
-      max_price: this.maxPrice(),
-      sort: this.sortControl.value || 'newest',
-      per_page: this.pageSize(),
-      page: this.currentPage(),
-    };
+  private formatCount(n: number): string {
+    if (n <= 0) {
+      return '—';
+    }
+    if (n >= 1000) {
+      return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K+`;
+    }
+    return `${n}+`;
+  }
 
-    this.influencerService.list(filters).subscribe({
-      next: (res) => {
-        this.influencers.set(res.data);
-        this.total.set(res.meta.total);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+  onSearch(event?: Event): void {
+    event?.preventDefault();
+
+    const queryParams: Record<string, string> = {};
+    const term = this.searchForm.value.search?.trim();
+    const category = this.searchForm.value.category;
+
+    if (term) {
+      queryParams['search'] = term;
+    }
+    if (category) {
+      queryParams['category_id'] = String(category);
+    }
+
+    void this.router.navigate(['/search'], { queryParams });
   }
 }
