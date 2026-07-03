@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -39,7 +40,14 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
             </div>
 
             <div class="flex items-center gap-2">
-              <a routerLink="/admin/login" class="hidden sm:inline-flex nav-link">Admin</a>
+              @if (auth.isAdmin()) {
+                <a routerLink="/admin" class="hidden sm:inline-flex nav-link">Admin Panel</a>
+              }
+              @if (auth.isAuthenticated()) {
+                <button type="button" (click)="logout()" class="hidden sm:inline-flex nav-link">
+                  Logout
+                </button>
+              }
               <a routerLink="/search" class="btn-gradient">
                 Book an Influencer
               </a>
@@ -93,7 +101,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
                 <li><a routerLink="/search">Browse Influencers</a></li>
                 <li><a routerLink="/trending">Trending</a></li>
                 <li><a routerLink="/search">Categories</a></li>
-                <li><a routerLink="/admin/login">Admin Portal</a></li>
+                <li><a routerLink="/admin">Admin Portal</a></li>
               </ul>
             </div>
 
@@ -161,5 +169,10 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   `,
 })
 export class PublicLayoutComponent {
+  readonly auth = inject(AuthService);
   readonly year = new Date().getFullYear();
+
+  logout(): void {
+    this.auth.logout().subscribe();
+  }
 }
