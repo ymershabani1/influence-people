@@ -3,7 +3,7 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { InfluencerService } from '../../../core/services/influencer.service';
 import { CategoryService } from '../../../core/services/category.service';
 import {
@@ -51,6 +51,8 @@ export class SearchComponent implements OnInit {
 
   priceRange = signal<PriceRange>({ min: 0, max: 10000 });
   maxPrice = signal(10000);
+  private priceTouched = false;
+  private readonly priceChange$ = new Subject<void>();
 
   readonly sortOptions: { value: InfluencerSort; label: string }[] = [
     { value: 'most_booked', label: 'Most Booked' },
@@ -73,6 +75,7 @@ export class SearchComponent implements OnInit {
     this.loadPriceRange();
     this.applyQueryParams();
     this.setupSearchDebounce();
+    this.setupPriceDebounce();
   }
 
   private applyQueryParams(): void {
@@ -84,12 +87,23 @@ export class SearchComponent implements OnInit {
     this.sortControl.setValue((params.get('sort') as InfluencerSort) ?? 'most_booked', {
       emitEvent: false,
     });
+    const maxPriceParam = params.get('max_price');
+    if (maxPriceParam) {
+      this.maxPrice.set(Number(maxPriceParam));
+      this.priceTouched = true;
+    }
     this.loadInfluencers();
   }
 
   private setupSearchDebounce(): void {
     this.searchControl.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.onFilterChange());
+  }
+
+  private setupPriceDebounce(): void {
+    this.priceChange$
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.onFilterChange());
   }
 
@@ -101,8 +115,8 @@ export class SearchComponent implements OnInit {
 
   onPriceChange(value: number): void {
     this.maxPrice.set(value);
-    this.currentPage.set(1);
-    this.loadInfluencers();
+    this.priceTouched = true;
+    this.priceChange$.next();
   }
 
   changePage(page: number): void {
@@ -117,15 +131,18 @@ export class SearchComponent implements OnInit {
     this.categoryControl.setValue('');
     this.sortControl.setValue('most_booked');
     this.maxPrice.set(this.priceRange().max);
+    this.priceTouched = false;
     this.onFilterChange();
   }
 
   private syncUrl(): void {
+    const capApplied = this.priceTouched && this.maxPrice() < this.priceRange().max;
     const queryParams: Record<string, string | null> = {
       search: this.searchControl.value || null,
       gender: this.genderControl.value || null,
       category_id: this.categoryControl.value ? String(this.categoryControl.value) : null,
       sort: this.sortControl.value && this.sortControl.value !== 'most_booked' ? this.sortControl.value : null,
+      max_price: capApplied ? String(Math.round(this.maxPrice())) : null,
     };
     this.router.navigate([], {
       relativeTo: this.route,
@@ -142,7 +159,8 @@ export class SearchComponent implements OnInit {
   private loadPriceRange(): void {
     this.influencerService.getPriceRange().subscribe((res) => {
       this.priceRange.set(res.data);
-      if (this.maxPrice() === 10000) {
+      // Snap the slider to the real max unless the user picked a custom cap.
+      if (!this.priceTouched) {
         this.maxPrice.set(res.data.max);
       }
     });
@@ -150,11 +168,14 @@ export class SearchComponent implements OnInit {
 
   loadInfluencers(): void {
     this.loading.set(true);
+    // Only cap by price when the user has moved the slider below the real max,
+    // otherwise we'd hide everyone priced above the initial slider default.
+    const capApplied = this.priceTouched && this.maxPrice() < this.priceRange().max;
     const filters: InfluencerFilters = {
       search: this.searchControl.value || undefined,
       gender: this.genderControl.value || undefined,
       category_id: this.categoryControl.value || undefined,
-      max_price: this.maxPrice(),
+      max_price: capApplied ? this.maxPrice() : undefined,
       sort: this.sortControl.value || 'most_booked',
       per_page: this.pageSize(),
       page: this.currentPage(),
