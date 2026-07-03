@@ -34,7 +34,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
                 >Trending</a
               >
               <a routerLink="/search" routerLinkActive="nav-link-active" class="nav-link"
-                >Categories</a
+                >Find your Influencer</a
               >
             </div>
 

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { InfluencerService } from '../../../core/services/influencer.service';
 import { CategoryService } from '../../../core/services/category.service';
@@ -40,8 +40,10 @@ export class HomeComponent implements OnInit {
   readonly loadingTrending = signal(true);
   readonly totalInfluencers = signal(0);
 
-  readonly searchControl = new FormControl('');
-  readonly categoryControl = new FormControl<number | ''>('');
+  readonly searchForm = new FormGroup({
+    search: new FormControl(''),
+    category: new FormControl<number | ''>(''),
+  });
 
   readonly steps: Step[] = [
     {
@@ -119,10 +121,12 @@ export class HomeComponent implements OnInit {
     return `${n}+`;
   }
 
-  onSearch(): void {
+  onSearch(event?: Event): void {
+    event?.preventDefault();
+
     const queryParams: Record<string, string> = {};
-    const term = this.searchControl.value?.trim();
-    const category = this.categoryControl.value;
+    const term = this.searchForm.value.search?.trim();
+    const category = this.searchForm.value.category;
 
     if (term) {
       queryParams['search'] = term;
@@ -131,6 +135,6 @@ export class HomeComponent implements OnInit {
       queryParams['category_id'] = String(category);
     }
 
-    this.router.navigate(['/search'], { queryParams });
+    void this.router.navigate(['/search'], { queryParams });
   }
 }
