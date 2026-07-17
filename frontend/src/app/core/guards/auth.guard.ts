@@ -1,11 +1,17 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 import { map, catchError, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (
+  _route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+
+  const redirectToLogin = () =>
+    router.createUrlTree(['/admin/login'], { queryParams: { returnUrl: state.url } });
 
   if (auth.isAuthenticated()) {
     return true;
@@ -16,23 +22,19 @@ export const authGuard: CanActivateFn = () => {
       if (res.success && res.data?.user) {
         return true;
       }
-      router.navigate(['/admin/login']);
-      return false;
+      return redirectToLogin();
     }),
-    catchError(() => {
-      router.navigate(['/admin/login']);
-      return of(false);
-    })
+    catchError(() => of(redirectToLogin()))
   );
 };
 
-export const guestGuard: CanActivateFn = () => {
+export const guestGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
   if (auth.isAuthenticated()) {
-    router.navigate(['/admin/dashboard']);
-    return false;
+    const returnUrl = route.queryParamMap.get('returnUrl') ?? '/';
+    return router.parseUrl(returnUrl);
   }
 
   return true;

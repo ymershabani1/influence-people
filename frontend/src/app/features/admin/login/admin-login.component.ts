@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -29,6 +29,7 @@ export class AdminLoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly toast = inject(ToastService);
 
   readonly loading = signal(false);
@@ -47,7 +48,8 @@ export class AdminLoginComponent {
       this.auth.login(this.form.getRawValue()).subscribe({
         next: () => {
           this.toast.success('Welcome back!');
-          this.router.navigate(['/admin/dashboard']);
+          const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+          this.router.navigateByUrl(returnUrl);
         },
         error: () => this.loading.set(false),
         complete: () => this.loading.set(false),
