@@ -6,11 +6,24 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+html {
   height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  height: 100%;
+  width: 100%;
   margin: 0;
+  overflow-x: hidden;
   font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   @apply bg-gray-50 text-gray-900;
+}
+
+app-root {
+  display: block;
+  min-width: 0;
 }
 
 /* Tailwind preflight breaks Material form fields — reset inside Material components */
